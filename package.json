@@ -1,0 +1,264 @@
+{
+  "name": "quantum-post",
+  "version": "1.0.0",
+  "description": "A modern, lightweight Postman-like API client with Electron desktop support",
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.js",
+  "homepage": "https://github.com/yourusername/quantum-post",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/quantum-post.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/quantum-post/issues"
+  },
+  "keywords": [
+    "api-client",
+    "postman",
+    "rest-client",
+    "http-client",
+    "electron",
+    "react",
+    "vite",
+    "tailwindcss"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+
+    // Electron Development
+    "electron": "electron .",
+    "electron:dev": "concurrently -n \"VITE,ELECTRON\" -c \"green,blue\" \"vite\" \"wait-on tcp:5173 && electron .\"",
+
+    // Electron Build Commands
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:win:portable": "npm run build && electron-builder --win portable",
+    "dist:win:nsis": "npm run build && electron-builder --win nsis",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "dist:all": "npm run build && electron-builder -wml",
+
+    // Alternative packaging
+    "package:win": "npm run build && electron-packager . QuantumPost --platform=win32 --arch=x64 --out=release-builds --overwrite --asar --icon=build/icon.ico",
+    "package:mac": "npm run build && electron-packager . QuantumPost --platform=darwin --arch=x64 --out=release-builds --overwrite --asar --icon=build/icon.icns",
+    "package:linux": "npm run build && electron-packager . QuantumPost --platform=linux --arch=x64 --out=release-builds --overwrite --asar --icon=build/icon.png",
+
+    // Development utilities
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{js,jsx}\""
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.0",
+    "classnames": "^2.3.2",
+    "framer-motion": "^10.16.4",
+    "react-icons": "^4.11.0",
+    "uuid": "^9.0.0",
+    "electron": "^28.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.15",
+    "concurrently": "^8.2.1",
+    "electron-builder": "^24.6.4",
+    "electron-packager": "^17.1.2",
+    "postcss": "^8.4.30",
+    "tailwindcss": "^3.3.3",
+    "vite": "^4.4.5",
+    "wait-on": "^7.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "build": {
+    "appId": "com.quantum.post",
+    "productName": "QuantumPost",
+    "copyright": "Copyright © 2024 Your Name",
+    "directories": {
+      "output": "dist-electron",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "public/",
+        "to": "public/",
+        "filter": ["**/*"]
+      }
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "**/*.node",
+      "**/assets/**"
+    ],
+
+    // Windows Configuration
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        },
+        {
+          "target": "msi",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "publisherName": "QuantumPost",
+      "verifyUpdateCodeSignature": false,
+      "signingHashAlgorithms": ["sha256"],
+      "rfc3161TimeStampServer": "http://timestamp.digicert.com"
+    },
+
+    // NSIS Installer Configuration
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "QuantumPost",
+      "menuCategory": "Development Tools",
+      "uninstallDisplayName": "QuantumPost API Client",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeader": "build/installer-header.bmp",
+      "installerSidebar": "build/installer-sidebar.bmp",
+      "uninstallerSidebar": "build/uninstaller-sidebar.bmp",
+      "license": "LICENSE",
+      "runAfterFinish": false
+    },
+
+    // Portable Configuration
+    "portable": {
+      "artifactName": "QuantumPost-Portable.exe",
+      "requestExecutionLevel": "user",
+      "splashImage": "build/splash.bmp"
+    },
+
+    // macOS Configuration
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.developer-tools",
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "identity": null
+    },
+
+    // DMG Configuration
+    "dmg": {
+      "background": "build/dmg-background.png",
+      "iconSize": 128,
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    },
+
+    // Linux Configuration
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm",
+        "snap"
+      ],
+      "icon": "build/icon.png",
+      "category": "Development",
+      "packageCategory": "devel",
+      "maintainer": "Your Name <your.email@example.com>"
+    },
+
+    // AppImage Configuration
+    "appImage": {
+      "synopsis": "Modern API Client",
+      "category": "Development"
+    },
+
+    // Snap Configuration
+    "snap": {
+      "summary": "A modern API client",
+      "grade": "stable",
+      "confinement": "strict",
+      "plugs": [
+        "default",
+        "home",
+        "network",
+        "network-bind"
+      ],
+      "environment": {
+        "TMPDIR": "$XDG_RUNTIME_DIR"
+      }
+    },
+
+    // Build Hooks
+    "afterPack": "./build/after-pack.js",
+    "afterSign": "./build/after-sign.js",
+
+    // Publishing Configuration (Optional)
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "yourusername",
+        "repo": "quantum-post",
+        "releaseType": "release"
+      }
+    ],
+
+    // Build Metadata
+    "buildVersion": "1.0.0",
+    "compression": "maximum",
+    "npmRebuild": false,
+    "removePackageScripts": true,
+    "forceCodeSigning": false,
+    "generateUpdatesFilesForAllChannels": false
+  }
+}

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modern Postman-like API client with Electron support" />
+  <meta name="keywords" content="API, REST, client, Postman, HTTP, requests, testing" />
+  <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <title>Quantum Post - API Client</title>
+
+  <!-- Inter Font from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #9ca3af;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: #4b5563;
+    }
+
+    .dark ::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+
+    /* Selection color */
+    ::selection {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    /* Loading animation */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Smooth transitions */
+    * {
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    /* Focus styles */
+    :focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    /* Ensure root takes full height */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #root {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <div id="root"></div>
+
+  <!-- Loading fallback -->
+  <div id="loading-fallback" style="display: none;">
+    <div class="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div class="text-center">
+        <div class="relative w-16 h-16 mx-auto mb-4">
+          <div class="absolute inset-0 border-4 border-primary-200 dark:border-primary-800 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Modern Postman</h2>
+        <p class="text-gray-600 dark:text-gray-400">Loading API client...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.jsx"></script>
+
+  <script>
+    // Show loading fallback while React loads
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('root');
+      const fallback = document.getElementById('loading-fallback');
+
+      // Show fallback immediately
+      fallback.style.display = 'block';
+
+      // Check if app is running in Electron
+      if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+        document.documentElement.classList.add('electron');
+
+        // Listen for theme changes from Electron
+        window.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'theme-changed') {
+            document.documentElement.classList.toggle('dark', event.data.theme === 'dark');
+          }
+        });
+      }
+
+      // Register service worker for PWA
+      if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('SW registered: ', registration);
+          }).catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+        });
+      }
+
+      // Detect system theme preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+      const savedTheme = localStorage.getItem('modern-postman-theme');
+
+      if (savedTheme) {
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+      } else {
+        document.documentElement.classList.toggle('dark', prefersDark.matches);
+        localStorage.setItem('modern-postman-theme', prefersDark.matches ? 'dark' : 'light');
+      }
+
+      // Listen for system theme changes
+      prefersDark.addEventListener('change', (e) => {
+        if (!localStorage.getItem('modern-postman-theme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+
+      // Hide fallback when React mounts
+      const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'childList' && root.children.length > 0) {
+            // Small delay to ensure React is fully loaded
+            setTimeout(() => {
+              fallback.style.display = 'none';
+              observer.disconnect();
+            }, 100);
+            break;
+          }
+        }
+      });
+
+      observer.observe(root, { childList: true, subtree: true });
+
+      // Fallback: hide loading after 5 seconds
+      setTimeout(() => {
+        if (fallback.style.display !== 'none') {
+          fallback.style.display = 'none';
+          console.warn('React took too long to load, showing empty app');
+        }
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
