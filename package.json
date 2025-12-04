@@ -2,7 +2,7 @@
   "name": "quantum-post",
   "version": "1.0.0",
   "description": "A modern, lightweight Postman-like API client with Electron desktop support",
-  "author": "Your Name <your.email@example.com>",
+  "author": "Baraa",
   "license": "MIT",
   "private": true,
   "type": "module",
@@ -30,11 +30,11 @@
     "build": "vite build",
     "preview": "vite preview",
 
-    // Electron Development
+
     "electron": "electron .",
     "electron:dev": "concurrently -n \"VITE,ELECTRON\" -c \"green,blue\" \"vite\" \"wait-on tcp:5173 && electron .\"",
 
-    // Electron Build Commands
+
     "dist": "npm run build && electron-builder",
     "dist:win": "npm run build && electron-builder --win",
     "dist:win:portable": "npm run build && electron-builder --win portable",
@@ -43,12 +43,12 @@
     "dist:linux": "npm run build && electron-builder --linux",
     "dist:all": "npm run build && electron-builder -wml",
 
-    // Alternative packaging
+
     "package:win": "npm run build && electron-packager . QuantumPost --platform=win32 --arch=x64 --out=release-builds --overwrite --asar --icon=build/icon.ico",
     "package:mac": "npm run build && electron-packager . QuantumPost --platform=darwin --arch=x64 --out=release-builds --overwrite --asar --icon=build/icon.icns",
     "package:linux": "npm run build && electron-packager . QuantumPost --platform=linux --arch=x64 --out=release-builds --overwrite --asar --icon=build/icon.png",
 
-    // Development utilities
+
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{js,jsx}\""
   },
@@ -118,7 +118,7 @@
       "**/assets/**"
     ],
 
-    // Windows Configuration
+
     "win": {
       "target": [
         {
@@ -141,7 +141,7 @@
       "rfc3161TimeStampServer": "http://timestamp.digicert.com"
     },
 
-    // NSIS Installer Configuration
+
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
@@ -159,14 +159,14 @@
       "runAfterFinish": false
     },
 
-    // Portable Configuration
+
     "portable": {
       "artifactName": "QuantumPost-Portable.exe",
       "requestExecutionLevel": "user",
       "splashImage": "build/splash.bmp"
     },
 
-    // macOS Configuration
+
     "mac": {
       "target": [
         "dmg",
@@ -181,7 +181,7 @@
       "identity": null
     },
 
-    // DMG Configuration
+
     "dmg": {
       "background": "build/dmg-background.png",
       "iconSize": 128,
@@ -203,7 +203,7 @@
       }
     },
 
-    // Linux Configuration
+
     "linux": {
       "target": [
         "AppImage",
@@ -217,13 +217,13 @@
       "maintainer": "Your Name <your.email@example.com>"
     },
 
-    // AppImage Configuration
+
     "appImage": {
       "synopsis": "Modern API Client",
       "category": "Development"
     },
 
-    // Snap Configuration
+
     "snap": {
       "summary": "A modern API client",
       "grade": "stable",
@@ -239,11 +239,11 @@
       }
     },
 
-    // Build Hooks
+
     "afterPack": "./build/after-pack.js",
     "afterSign": "./build/after-sign.js",
 
-    // Publishing Configuration (Optional)
+
     "publish": [
       {
         "provider": "github",
@@ -253,7 +253,7 @@
       }
     ],
 
-    // Build Metadata
+
     "buildVersion": "1.0.0",
     "compression": "maximum",
     "npmRebuild": false,
